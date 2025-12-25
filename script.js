@@ -5,6 +5,47 @@ let currentStep = 1;
 let isMinor = false;
 let diasSelecionados = [];
 
+// --- MÁSCARAS E EVENTOS ---
+document.addEventListener("DOMContentLoaded", function() {
+    
+    // Máscara CPF (Apenas números, visualmente formata)
+    const applyCpfMask = (event) => {
+        let x = event.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,3})(\d{0,2})/);
+        event.target.value = !x[2] ? x[1] : x[1] + '.' + x[2] + (x[3] ? '.' + x[3] : '') + (x[4] ? '-' + x[4] : '');
+    };
+    
+    // Máscara Telefone
+    const applyTelMask = (event) => {
+        let x = event.target.value.replace(/\D/g, '').match(/(\d{0,2})(\d{0,5})(\d{0,4})/);
+        event.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+    };
+
+    // Bloqueia Números no Nome
+    const blockNumbersInName = (event) => {
+        event.target.value = event.target.value.replace(/[0-9]/g, '');
+    };
+
+    const cpfInputs = ['cpfParticipante', 'respCpf'];
+    const telInputs = ['telefone', 'respTelefone', 'emergenciaTelefone'];
+    const nameInputs = ['nome', 'respNome', 'emergenciaNome'];
+
+    cpfInputs.forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.addEventListener('input', applyCpfMask);
+    });
+
+    telInputs.forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.addEventListener('input', applyTelMask);
+    });
+
+    nameInputs.forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.addEventListener('input', blockNumbersInName);
+    });
+});
+
+
 // --- NAVEGAÇÃO ---
 function nextStep(step) {
     if (!validateStep(step)) return;
@@ -38,7 +79,6 @@ function nextStep(step) {
 
     if (step === 3) {
         const perm = document.getElementById('permanencia').value;
-        // Valida se selecionou dias para Parcial OU Day Use
         if ((perm === "Todos" || perm === "Parcial" || perm === "Day Use") && diasSelecionados.length === 0) {
             alert("Erro: Selecione os dias de participação.");
             return;
@@ -116,18 +156,14 @@ function toggleDias() {
         diasSelecionados = [];
         updateBubblesUI();
     } else {
-        // Mostra container para Todos, Parcial e Day Use
         container.classList.remove('hidden');
-        
         if (tipo === "Todos") {
-            // Marca tudo e bloqueia
             diasSelecionados = [];
             bubbles.forEach(b => {
                 diasSelecionados.push(b.getAttribute('data-value'));
                 b.classList.add('selected', 'locked');
             });
         } else {
-            // Parcial ou Day Use: Limpa e deixa usuário escolher
             diasSelecionados = [];
             bubbles.forEach(b => {
                 b.classList.remove('selected', 'locked');
@@ -139,7 +175,7 @@ function toggleDias() {
 
 function selectDay(element) {
     const tipo = document.getElementById('permanencia').value;
-    if (tipo === "Todos") return; // Não pode desmarcar se for todos
+    if (tipo === "Todos") return; 
 
     const val = element.getAttribute('data-value');
     if (diasSelecionados.includes(val)) {
@@ -168,27 +204,67 @@ function togglePagamento() {
     if (tipo === 'Cartao') document.getElementById('infoCartao').classList.remove('hidden');
 }
 
-// --- VALIDAÇÃO ---
+// --- VALIDAÇÃO RIGOROSA ---
 function validateStep(step) {
     const stepEl = document.getElementById(`step${step}`);
     const inputs = stepEl.querySelectorAll('input[required], select[required]');
     let valid = true;
 
+    // Reseta erros visuais
+    stepEl.querySelectorAll('.error-msg').forEach(msg => msg.classList.add('hidden'));
+    stepEl.querySelectorAll('.input-error').forEach(inp => inp.classList.remove('input-error'));
+
     inputs.forEach(input => {
         if (input.offsetParent === null) return; 
-        if (!input.value) {
-            input.style.borderColor = "#ef4444";
+
+        // 1. Checa se está vazio
+        if (!input.value.trim()) {
+            input.classList.add('input-error');
             valid = false;
-        } else {
-            input.style.borderColor = "#cbd5e1";
+            return;
+        }
+
+        // 2. Validações Específicas
+        
+        // Nome: Mínimo 6 chars
+        if (input.name === 'nome' || input.name === 'respNome') {
+            if (input.value.length < 6) {
+                showError(input);
+                valid = false;
+            }
+        }
+
+        // CPF: Deve ter EXATAMENTE 11 Números (removendo a máscara para contar)
+        if (input.name === 'cpf' || input.name === 'respCpf') {
+            const onlyNumbers = input.value.replace(/\D/g, ''); // Remove tudo que não é número
+            if (onlyNumbers.length !== 11) {
+                showError(input);
+                valid = false;
+            }
+        }
+
+        // Telefone: Pelo menos 10 números (considerando DDD)
+        if (input.name === 'telefone' || input.name === 'respTelefone' || input.name === 'emergenciaTelefone') {
+            const onlyNumbers = input.value.replace(/\D/g, '');
+            if (onlyNumbers.length < 10) {
+                showError(input);
+                valid = false;
+            }
         }
     });
 
-    if (!valid) alert("Preencha os campos obrigatórios.");
+    if (!valid) alert("Verifique os campos em vermelho.");
     return valid;
 }
 
-// --- ENVIO + WHATSAPP ---
+function showError(input) {
+    input.classList.add('input-error');
+    const parent = input.parentElement;
+    const msg = parent.querySelector('.error-msg');
+    if(msg) msg.classList.remove('hidden');
+}
+
+// --- ENVIO ---
 document.getElementById('rsvpForm').addEventListener('submit', function(e) {
     e.preventDefault();
     const submitBtn = document.getElementById('submitBtn');
@@ -202,6 +278,7 @@ document.getElementById('rsvpForm').addEventListener('submit', function(e) {
     data.isMenor = isMinor;
     data.diasSelecionados = diasSelecionados;
 
+    // Envio dos dados
     fetch(API_URL, {
         method: 'POST',
         body: JSON.stringify(data),
@@ -212,8 +289,7 @@ document.getElementById('rsvpForm').addEventListener('submit', function(e) {
         loading.classList.add('hidden');
         if (result.success) {
             
-            // --- GERAÇÃO DO LINK DE WHATSAPP ---
-            const nomeInscrito = data.nome.split(" ")[0];
+            // Lógica WhatsApp
             const idInscricao = result.id;
             const formaPgto = data.formaPagamento;
             const phone = "5521994760764";
@@ -223,18 +299,13 @@ document.getElementById('rsvpForm').addEventListener('submit', function(e) {
             msg += `🆔 *ID:* ${idInscricao}\n`;
             msg += `💰 *Pgto:* ${formaPgto}\n\n`;
 
-            if (formaPgto === "Pix") {
-                msg += "Estou enviando o comprovante em anexo! 👇";
-            } else if (formaPgto === "Cartao") {
-                msg += "Gostaria de receber o link para pagamento no cartão.";
-            } else if (formaPgto === "Conversar") {
-                msg += "Gostaria de conversar sobre as condições de pagamento.";
-            }
+            if (formaPgto === "Pix") msg += "Estou enviando o comprovante em anexo! 👇";
+            else if (formaPgto === "Cartao") msg += "Gostaria de receber o link para pagamento no cartão.";
+            else if (formaPgto === "Conversar") msg += "Gostaria de conversar sobre as condições de pagamento.";
 
             const finalUrl = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
             document.getElementById('btnWhatsapp').href = finalUrl;
             
-            // --- TELA FINAL ---
             document.getElementById('rsvpForm').classList.add('hidden');
             document.getElementById('successMessage').classList.remove('hidden');
             document.querySelector('.progress-bar').classList.add('hidden');
