@@ -24,12 +24,14 @@
             
             <div class="form-group">
                 <label>Nome Completo *</label>
-                <input type="text" name="nome" required minlength="5">
+                <input type="text" name="nome" id="nome" required minlength="6" placeholder="Nome e Sobrenome">
+                <small class="error-msg hidden">Digite o nome completo (sem números).</small>
             </div>
 
             <div class="form-group">
-                <label>CPF *</label>
-                <input type="text" name="cpf" id="cpfParticipante" placeholder="000.000.000-00" required>
+                <label>CPF (Apenas números) *</label>
+                <input type="tel" name="cpf" id="cpfParticipante" placeholder="000.000.000-00" required maxlength="14" inputmode="numeric">
+                <small class="error-msg hidden">O CPF deve ter 11 números.</small>
             </div>
 
             <div class="row">
@@ -45,7 +47,8 @@
             
             <div class="form-group">
                 <label>WhatsApp *</label>
-                <input type="tel" name="telefone" placeholder="(21) 99999-9999" required>
+                <input type="tel" name="telefone" id="telefone" placeholder="(21) 99999-9999" required maxlength="15" inputmode="tel">
+                <small class="error-msg hidden">Telefone incompleto.</small>
             </div>
 
             <div class="form-group">
@@ -94,7 +97,7 @@
 
             <div class="form-group">
                 <label>Nome do Responsável *</label>
-                <input type="text" name="respNome" id="respNome">
+                <input type="text" name="respNome" id="respNome" placeholder="Nome completo">
             </div>
 
             <div class="row">
@@ -110,13 +113,13 @@
                 </div>
                 <div class="form-group">
                     <label>CPF do Responsável *</label>
-                    <input type="text" name="respCpf" id="respCpf">
+                    <input type="tel" name="respCpf" id="respCpf" maxlength="14" inputmode="numeric" placeholder="Apenas números">
                 </div>
             </div>
 
             <div class="form-group">
                 <label>WhatsApp do Responsável *</label>
-                <input type="tel" name="respTelefone" id="respTelefone">
+                <input type="tel" name="respTelefone" id="respTelefone" maxlength="15" inputmode="tel">
             </div>
 
             <div class="form-group">
@@ -188,7 +191,7 @@
                 </div>
                 <div class="form-group">
                     <label>Telefone *</label>
-                    <input type="tel" name="emergenciaTelefone" required>
+                    <input type="tel" name="emergenciaTelefone" id="emergenciaTelefone" required maxlength="15">
                 </div>
             </div>
 
