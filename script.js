@@ -1,5 +1,5 @@
 // ✅ URL DA API
-const API_URL = "https://script.google.com/macros/s/AKfycbxO6seIHLd9DwbUtlY0b5LrSYJqUm8iSut2VPqohh3XsuLh2qB5LqKqo_I-GlMFa0Wb_Q/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzDfK6wQaFjsUHVjGUj4y4bEmhuG7PAGaBSeT1udhtAM_06S8pfTYakr3k9pawYyRBUNA/exec";
 
 let currentStep = 1;
 let isMinor = false;
@@ -322,3 +322,4 @@ document.getElementById('rsvpForm').addEventListener('submit', function(e) {
         submitBtn.disabled = false;
     });
 });
+
