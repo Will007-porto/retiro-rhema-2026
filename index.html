@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Inscrição Retiro 2026 | IBC Rhema</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Retiro de Carnaval 2026</h1>
+        <p>Igreja Batista Central Rhema</p>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+    </header>
+
+    <form id="rsvpForm">
+        <div class="step active" id="step1">
+            <h2>Dados do Participante</h2>
+            
+            <div class="form-group">
+                <label>Nome Completo *</label>
+                <input type="text" name="nome" required minlength="5">
+            </div>
+
+            <div class="form-group">
+                <label>CPF *</label>
+                <input type="text" name="cpf" id="cpfParticipante" placeholder="000.000.000-00" required>
+            </div>
+
+            <div class="row">
+                <div class="form-group" style="flex: 2;">
+                    <label>Nascimento *</label>
+                    <input type="date" name="nascimento" id="nascimento" required>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Idade</label>
+                    <input type="text" name="idade" id="idade" readonly class="readonly-field">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>WhatsApp *</label>
+                <input type="tel" name="telefone" placeholder="(21) 99999-9999" required>
+            </div>
+
+            <div class="form-group">
+                <label>E-mail *</label>
+                <input type="email" name="email" required>
+            </div>
+
+            <div class="row">
+                <div class="form-group">
+                    <label>Cidade *</label>
+                    <input type="text" name="cidade" required>
+                </div>
+                <div class="form-group">
+                    <label>Igreja / Congregação *</label>
+                    <select name="igrejaSelect" id="igrejaSelect" onchange="toggleIgreja()" required>
+                        <option value="IBC Rhema">IBC Rhema (Sede/Congregações)</option>
+                        <option value="Outra">Outra Denominação</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group hidden" id="outraIgrejaWrapper">
+                <label>Qual sua igreja? *</label>
+                <input type="text" name="igrejaOutra" id="igrejaOutra">
+            </div>
+
+            <div class="form-group">
+                <label>Tipo de Participação *</label>
+                <select name="tipo" required>
+                    <option value="">Selecione...</option>
+                    <option value="Jovem">Jovem</option>
+                    <option value="Adulto">Adulto</option>
+                    <option value="Obreiro">Obreiro/Equipe</option>
+                    <option value="Criança">Criança</option>
+                </select>
+            </div>
+
+            <button type="button" class="btn-next" onclick="nextStep(1)">Próximo</button>
+        </div>
+
+        <div class="step" id="step2">
+            <div class="alert-box">
+                ⚠️ Participante menor de idade. Dados do responsável são obrigatórios.
+            </div>
+            <h2>Dados do Responsável Legal</h2>
+
+            <div class="form-group">
+                <label>Nome do Responsável *</label>
+                <input type="text" name="respNome" id="respNome">
+            </div>
+
+            <div class="row">
+                <div class="form-group">
+                    <label>Parentesco *</label>
+                    <select name="respParentesco" id="respParentesco">
+                        <option value="">Selecione...</option>
+                        <option value="Pai/Mãe">Pai/Mãe</option>
+                        <option value="Avós">Avô/Avó</option>
+                        <option value="Tio/Tia">Tio/Tia</option>
+                        <option value="Outro">Outro Legal</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>CPF do Responsável *</label>
+                    <input type="text" name="respCpf" id="respCpf">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>WhatsApp do Responsável *</label>
+                <input type="tel" name="respTelefone" id="respTelefone">
+            </div>
+
+            <div class="form-group">
+                <label>Autoriza pernoite? *</label>
+                <select name="respAutorizaPernoite" id="respAutorizaPernoite">
+                    <option value="">Selecione...</option>
+                    <option value="Sim">Sim, autorizo dormir no retiro</option>
+                    <option value="Não">Não, voltará para casa</option>
+                </select>
+            </div>
+
+            <div class="btn-group">
+                <button type="button" class="btn-prev" onclick="prevStep(2)">Voltar</button>
+                <button type="button" class="btn-next" onclick="nextStep(2)">Próximo</button>
+            </div>
+        </div>
+
+        <div class="step" id="step3">
+            <h2>Logística e Saúde</h2>
+
+            <div class="form-group">
+                <label>Permanência no Retiro *</label>
+                <select name="permanencia" id="permanencia" required onchange="toggleDias()">
+                    <option value="">Selecione...</option>
+                    <option value="Todos">Vou dormir TODOS os dias</option>
+                    <option value="Parcial">Vou dormir dias ESPECÍFICOS</option>
+                    <option value="Day Use">Vou passar o dia (sem dormir)</option>
+                </select>
+                <small id="avisoPernoite" class="hidden error-text">Responsável não autorizou pernoite.</small>
+            </div>
+
+            <div id="diasContainer" class="form-group hidden">
+                <label>Selecione os dias de participação: *</label>
+                <div class="days-wrapper">
+                    <div class="day-bubble" data-value="Sex 13/02" onclick="selectDay(this)">
+                        <span>SEX</span><strong>13</strong>
+                    </div>
+                    <div class="day-bubble" data-value="Sab 14/02" onclick="selectDay(this)">
+                        <span>SÁB</span><strong>14</strong>
+                    </div>
+                    <div class="day-bubble" data-value="Dom 15/02" onclick="selectDay(this)">
+                        <span>DOM</span><strong>15</strong>
+                    </div>
+                    <div class="day-bubble" data-value="Seg 16/02" onclick="selectDay(this)">
+                        <span>SEG</span><strong>16</strong>
+                    </div>
+                    <div class="day-bubble" data-value="Ter 17/02" onclick="selectDay(this)">
+                        <span>TER</span><strong>17</strong>
+                    </div>
+                </div>
+                <input type="hidden" name="diasSelecionados" id="diasSelecionados">
+            </div>
+
+            <div class="form-group">
+                <label>Restrição Alimentar</label>
+                <input type="text" name="restricaoAlimentar" placeholder="Alergias, intolerâncias...">
+            </div>
+
+            <div class="form-group">
+                <label>Condição de Saúde</label>
+                <input type="text" name="condicaoSaude" placeholder="Uso de medicamentos contínuo...">
+            </div>
+
+            <h3>Contato de Emergência</h3>
+            <div class="row">
+                <div class="form-group">
+                    <label>Nome *</label>
+                    <input type="text" name="emergenciaNome" required>
+                </div>
+                <div class="form-group">
+                    <label>Telefone *</label>
+                    <input type="tel" name="emergenciaTelefone" required>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button type="button" class="btn-prev" onclick="prevStep(3)">Voltar</button>
+                <button type="button" class="btn-next" onclick="nextStep(3)">Próximo</button>
+            </div>
+        </div>
+
+        <div class="step" id="step4">
+            <h2>Pagamento da Inscrição</h2>
+            
+            <div class="price-card">
+                <span class="price-label">Valor da Inscrição</span>
+                <span class="price-value">R$ 200,00</span>
+                <span class="price-sub">Alimentação e Hospedagem inclusas</span>
+            </div>
+
+            <div class="form-group">
+                <label>Forma de Pagamento *</label>
+                <select name="formaPagamento" id="formaPagamento" required onchange="togglePagamento()">
+                    <option value="">Selecione...</option>
+                    <option value="Pix">Pix (À vista)</option>
+                    <option value="Cartao">Cartão de Crédito / Carnê</option>
+                    <option value="Conversar">Preciso conversar sobre valores</option>
+                </select>
+            </div>
+
+            <div id="infoPix" class="finance-info hidden">
+                <p><strong>Chave Pix (CNPJ):</strong> 00.000.000/0001-00</p>
+                <p>Igreja Batista Central Rhema</p>
+                <hr>
+                <p><small>Envie o comprovante para a secretaria.</small></p>
+            </div>
+            
+            <div id="infoCartao" class="finance-info hidden">
+                <p>A equipe financeira entrará em contato para enviar o link de pagamento ou combinar o carnê.</p>
+            </div>
+
+            <div class="form-group checkbox-group">
+                <input type="checkbox" id="aceite" required>
+                <label for="aceite">Declaro que as informações são verdadeiras.</label>
+            </div>
+
+            <div class="btn-group">
+                <button type="button" class="btn-prev" onclick="prevStep(4)">Voltar</button>
+                <button type="submit" class="btn-submit" id="submitBtn">CONFIRMAR INSCRIÇÃO</button>
+            </div>
+        </div>
+    </form>
+
+    <div id="successMessage" class="hidden">
+        <div class="success-card">
+            <div class="success-icon">🎉</div>
+            <h2>Inscrição Confirmada!</h2>
+            <p>Seus dados já estão no nosso sistema.</p>
+            <p class="highlight-text">Para finalizar, clique no botão abaixo para enviar os detalhes à Secretaria via WhatsApp:</p>
+            
+            <a id="btnWhatsapp" href="#" target="_blank" class="btn-whatsapp">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                Finalizar no WhatsApp
+            </a>
+
+            <button onclick="window.location.reload()" class="btn-link-reload">Fazer outra inscrição</button>
+        </div>
+    </div>
+    
+    <div id="loadingOverlay" class="hidden">
+        <div class="spinner"></div>
+        <p>Processando...</p>
+    </div>
+
+</div>
+<script src="script.js"></script>
+</body>
+</html>
