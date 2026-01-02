@@ -243,3 +243,64 @@ document.getElementById('rsvpForm').addEventListener('submit', function(e) {
     })
     .catch(err => { loading.classList.add('hidden'); alert("Erro conexão."); btn.disabled=false; });
 });
+// --- FUNÇÕES DE MENU E TEMA ---
+
+// 1. Abrir/Fechar Menu
+function toggleMenu() {
+    const menu = document.getElementById('settingsMenu');
+    // Alterna a classe hidden
+    if (menu.classList.contains('hidden')) {
+        menu.classList.remove('hidden');
+    } else {
+        menu.classList.add('hidden');
+    }
+}
+
+// Fecha o menu se clicar fora dele
+document.addEventListener('click', function(event) {
+    const menu = document.getElementById('settingsMenu');
+    const btn = document.getElementById('btnSettings');
+    
+    if (!menu.classList.contains('hidden') && !menu.contains(event.target) && !btn.contains(event.target)) {
+        menu.classList.add('hidden');
+    }
+});
+
+// 2. Alternar Tema (Claro/Escuro)
+function toggleTheme() {
+    const body = document.body;
+    const btn = document.getElementById('btnTheme');
+    
+    body.classList.toggle('dark-mode');
+    
+    // Salva a preferência no navegador do usuário
+    if (body.classList.contains('dark-mode')) {
+        localStorage.setItem('theme', 'dark');
+        btn.innerText = "☀️ Modo Claro";
+    } else {
+        localStorage.setItem('theme', 'light');
+        btn.innerText = "🌙 Modo Escuro";
+    }
+}
+
+// 3. Enviar Feedback (WhatsApp Direto)
+function sendFeedback() {
+    const phone = "5521994760764"; // Seu número
+    const msg = "Olá! Tenho uma sugestão/feedback sobre o site do Retiro: ";
+    const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank');
+}
+
+// 4. Carregar Tema Salvo (Ao abrir a página)
+document.addEventListener("DOMContentLoaded", function() {
+    // Verifica se já existe preferência salva
+    const savedTheme = localStorage.getItem('theme');
+    const btn = document.getElementById('btnTheme');
+    
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        if(btn) btn.innerText = "☀️ Modo Claro";
+    }
+    
+    // ... (o resto do seu código de máscaras continua aqui) ...
+});
