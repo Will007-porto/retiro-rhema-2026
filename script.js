@@ -1,4 +1,4 @@
-// ✅ COLE SUA NOVA URL AQUI TAMBÉM:
+// ✅ URL DEFINITIVA FIXADA:
 const API_URL = "https://script.google.com/macros/s/AKfycbzS28qCIqnU8mM6nTbkdFQNeXHx2QeSUPB2JCp9nYxZywxTiZvJw9RxezNnHdOU_0yJeQ/exec";
 
 // 💰 CONFIGURAÇÃO DE TAXAS
