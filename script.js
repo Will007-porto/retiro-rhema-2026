@@ -1,16 +1,8 @@
-// ✅ URL DA API (MANTENHA A SUA URL ATUALIZADA AQUI)
-const API_URL = "https://script.google.com/macros/s/AKfycbzS28qCIqnU8mM6nTbkdFQNeXHx2QeSUPB2JCp9nYxZywxTiZvJw9RxezNnHdOU_0yJeQ/exec";
+// ✅ URL DA API (COLE A URL NOVA AQUI TAMBÉM)
+const API_URL = "COLE_SUA_NOVA_URL_AQUI";
 
-// 💰 CONFIGURAÇÃO DE TAXAS (EXEMPLO GENÉRICO DE MERCADO)
-// Altere o número (ex: 1.045 = 4.5% de juros totais)
-const TAXAS = {
-    1: 1.00,  // À vista (sem juros extra além do preço normal)
-    2: 1.045, // +4.5%
-    3: 1.060, // +6.0%
-    4: 1.075, // +7.5%
-    5: 1.090, // +9.0%
-    6: 1.105  // +10.5%
-};
+// 💰 CONFIGURAÇÃO DE TAXAS
+const TAXAS = { 1: 1.00, 2: 1.045, 3: 1.060, 4: 1.075, 5: 1.090, 6: 1.105 };
 const VALOR_BASE = 200.00;
 
 let currentStep = 1;
@@ -27,6 +19,14 @@ document.addEventListener("DOMContentLoaded", function() {
     ids.cpf.forEach(id => { const el = document.getElementById(id); if(el) el.addEventListener('input', applyCpfMask); });
     ids.tel.forEach(id => { const el = document.getElementById(id); if(el) el.addEventListener('input', applyTelMask); });
     ids.nome.forEach(id => { const el = document.getElementById(id); if(el) el.addEventListener('input', blockNum); });
+    
+    // Tema Salvo
+    const savedTheme = localStorage.getItem('theme');
+    const btn = document.getElementById('btnTheme');
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        if(btn) btn.innerText = "☀️ Modo Claro";
+    }
 });
 
 // --- NAVEGAÇÃO ---
@@ -53,11 +53,8 @@ function nextStep(step) {
 
     if (step === 3) {
         const p = document.getElementById('permanencia').value;
-        if ((p !== "Day Use" && p !== "") && diasSelecionados.length === 0) { // Day Use sem dias? Correção: Todos pedem dias exceto se for logica diferente. Mantivemos lógica anterior.
-             // Ajuste: Se for Todos, array é cheio auto. Se for Parcial ou Day Use precisa selecionar.
-             if ((p === "Todos" || p === "Parcial" || p === "Day Use") && diasSelecionados.length === 0) {
-                 alert("Selecione os dias."); return;
-             }
+        if ((p === "Todos" || p === "Parcial" || p === "Day Use") && diasSelecionados.length === 0) {
+             alert("Selecione os dias."); return;
         }
     }
 
@@ -133,7 +130,6 @@ function togglePagamento() {
     document.getElementById('infoCartao').classList.add('hidden');
     document.getElementById('parcelamentoContainer').classList.add('hidden');
     
-    // Reseta escolha de parcelas
     document.getElementById('detalhesParcelamento').value = "";
 
     if(t === 'Pix') document.getElementById('infoPix').classList.remove('hidden');
@@ -148,7 +144,7 @@ function gerarParcelas() {
     const lista = document.getElementById('listaParcelas');
     lista.innerHTML = "";
     
-    for (let i = 1; i <= 6; i++) { // Até 6x
+    for (let i = 1; i <= 6; i++) {
         const fator = TAXAS[i];
         const totalComJuros = VALOR_BASE * fator;
         const valorParcela = totalComJuros / i;
@@ -166,12 +162,8 @@ function gerarParcelas() {
 }
 
 function selecionarParcela(elemento, qtd, valorParc, total) {
-    // Remove seleção anterior
     document.querySelectorAll('.installment-option').forEach(e => e.classList.remove('selected'));
-    // Adiciona nova
     elemento.classList.add('selected');
-    
-    // Salva no input oculto
     const texto = `${qtd}x de R$ ${valorParc.toFixed(2)} (Total: R$ ${total.toFixed(2)})`;
     document.getElementById('detalhesParcelamento').value = texto;
 }
@@ -193,7 +185,6 @@ function validateStep(step) {
         if(i.name.includes('Telefone')) if(i.value.replace(/\D/g,'').length<10) { showError(i); ok=false; }
     });
 
-    // Validação extra etapa 4: Se cartão, tem que selecionar parcela
     if (step === 4) {
         const pgto = document.getElementById('formaPagamento').value;
         if (pgto === 'Cartao' && document.getElementById('detalhesParcelamento').value === "") {
@@ -219,7 +210,6 @@ document.getElementById('rsvpForm').addEventListener('submit', function(e) {
     d.isMenor = isMinor;
     d.diasSelecionados = diasSelecionados;
 
-    // Concatena parcelamento se for cartão
     if (d.formaPagamento === 'Cartao' && d.detalhesParcelamento) {
         d.formaPagamento = `Cartão - ${d.detalhesParcelamento}`;
     }
@@ -229,7 +219,6 @@ document.getElementById('rsvpForm').addEventListener('submit', function(e) {
     .then(res => {
         loading.classList.add('hidden');
         if(res.success) {
-            // Lógica WhatsApp
             let msg = `Olá! Fiz minha inscrição pro *Retiro 2026*.\n\n👤 *Nome:* ${d.nome}\n🆔 *ID:* ${res.id}\n💰 *Pgto:* ${d.formaPagamento}\n\n`;
             if(d.formaPagamento.includes("Pix")) msg+="Envio comprovante anexo.";
             else if(d.formaPagamento.includes("Cartão")) msg+="Aguardo link para pagamento no cartão.";
@@ -243,37 +232,20 @@ document.getElementById('rsvpForm').addEventListener('submit', function(e) {
     })
     .catch(err => { loading.classList.add('hidden'); alert("Erro conexão."); btn.disabled=false; });
 });
-// --- FUNÇÕES DE MENU E TEMA ---
 
-// 1. Abrir/Fechar Menu
-function toggleMenu() {
-    const menu = document.getElementById('settingsMenu');
-    // Alterna a classe hidden
-    if (menu.classList.contains('hidden')) {
-        menu.classList.remove('hidden');
-    } else {
-        menu.classList.add('hidden');
-    }
-}
-
-// Fecha o menu se clicar fora dele
+// --- MENU & TEMA ---
+function toggleMenu() { document.getElementById('settingsMenu').classList.toggle('hidden'); }
 document.addEventListener('click', function(event) {
     const menu = document.getElementById('settingsMenu');
     const btn = document.getElementById('btnSettings');
-    
     if (!menu.classList.contains('hidden') && !menu.contains(event.target) && !btn.contains(event.target)) {
         menu.classList.add('hidden');
     }
 });
-
-// 2. Alternar Tema (Claro/Escuro)
 function toggleTheme() {
     const body = document.body;
     const btn = document.getElementById('btnTheme');
-    
     body.classList.toggle('dark-mode');
-    
-    // Salva a preferência no navegador do usuário
     if (body.classList.contains('dark-mode')) {
         localStorage.setItem('theme', 'dark');
         btn.innerText = "☀️ Modo Claro";
@@ -282,26 +254,7 @@ function toggleTheme() {
         btn.innerText = "🌙 Modo Escuro";
     }
 }
-
-// 3. Enviar Feedback (WhatsApp Direto)
 function sendFeedback() {
-    const phone = "5521994760764"; // Seu número
     const msg = "Olá! Tenho uma sugestão/feedback sobre o site do Retiro: ";
-    const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
-    window.open(url, '_blank');
+    window.open(`https://wa.me/5521994760764?text=${encodeURIComponent(msg)}`, '_blank');
 }
-
-// 4. Carregar Tema Salvo (Ao abrir a página)
-document.addEventListener("DOMContentLoaded", function() {
-    // Verifica se já existe preferência salva
-    const savedTheme = localStorage.getItem('theme');
-    const btn = document.getElementById('btnTheme');
-    
-    if (savedTheme === 'dark') {
-        document.body.classList.add('dark-mode');
-        if(btn) btn.innerText = "☀️ Modo Claro";
-    }
-    
-    // ... (o resto do seu código de máscaras continua aqui) ...
-});
-
