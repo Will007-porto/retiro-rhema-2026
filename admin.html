@@ -39,8 +39,6 @@
         button { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
         .btn-save { background: var(--primary); color: white; }
         .btn-close { background: #e2e8f0; color: #333; }
-        
-        /* Botão de Excluir */
         .btn-delete { background: #ef4444; color: white; margin-top: 15px; width: 100%; }
         .btn-delete:hover { background: #dc2626; }
 
@@ -90,8 +88,7 @@
                         <th>Valor Pago</th>
                     </tr>
                 </thead>
-                <tbody>
-                    </tbody>
+                <tbody></tbody>
             </table>
         </div>
     </div>
@@ -103,8 +100,7 @@
                 <span style="cursor:pointer; font-size:1.5rem;" onclick="closeModal()">&times;</span>
             </div>
             
-            <div id="modalBody">
-                </div>
+            <div id="modalBody"></div>
 
             <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin-top: 15px;">
                 <h4 style="margin-top:0">Gestão Financeira</h4>
@@ -130,7 +126,7 @@
 
 <script>
     // ⚠️ COLE SUA NOVA URL AQUI:
-    const API_URL = "https://script.google.com/macros/s/AKfycbzS28qCIqnU8mM6nTbkdFQNeXHx2QeSUPB2JCp9nYxZywxTiZvJw9RxezNnHdOU_0yJeQ/exec"; 
+    const API_URL = "COLE_SUA_NOVA_URL_AQUI"; 
     
     let dadosGlobais = [];
     let usuarioAtual = null;
@@ -141,9 +137,7 @@
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
             carregarDados();
-        } else {
-            alert("Senha incorreta");
-        }
+        } else { alert("Senha incorreta"); }
     }
 
     function carregarDados() {
@@ -154,17 +148,14 @@
                     dadosGlobais = res.data;
                     renderTable(dadosGlobais);
                     updateStats(dadosGlobais);
-                } else {
-                    alert("Erro ao carregar: " + res.message);
-                }
+                } else { alert("Erro ao carregar: " + res.message); }
             })
-            .catch(() => alert("Erro de conexão."));
+            .catch(() => alert("Erro de conexão com a planilha."));
     }
 
     function renderTable(data) {
         const tbody = document.querySelector('#tabelaInscritos tbody');
         tbody.innerHTML = "";
-        
         data.forEach(p => {
             const tr = document.createElement('tr');
             tr.onclick = () => openModal(p);
@@ -210,9 +201,7 @@
         document.getElementById('modalDetalhes').style.display = 'flex';
     }
 
-    function closeModal() {
-        document.getElementById('modalDetalhes').style.display = 'none';
-    }
+    function closeModal() { document.getElementById('modalDetalhes').style.display = 'none'; }
 
     function salvarAlteracao() {
         const payload = {
@@ -222,7 +211,6 @@
             status: document.getElementById('editStatus').value,
             valor: document.getElementById('editValor').value
         };
-
         fetch(API_URL, { method: "POST", body: JSON.stringify(payload) })
         .then(r => r.json())
         .then(res => {
@@ -240,16 +228,17 @@
         const payload = {
             action: "excluir_inscricao",
             senha: "1234",
-            linha: usuarioAtual.linha
+            linha: usuarioAtual.linha,
+            nome: usuarioAtual.nome // ✅ ESSENCIAL PARA O EMAIL
         };
 
         fetch(API_URL, { method: "POST", body: JSON.stringify(payload) })
         .then(r => r.json())
         .then(res => {
             if(res.success) {
-                alert("Inscrição excluída!");
+                alert("Inscrição excluída e notificada por e-mail!");
                 closeModal();
-                carregarDados();
+                carregarDados(); // ✅ ISSO ATUALIZA A TELA SOZINHO
             } else { alert("Erro: " + res.message); }
         });
     }
@@ -262,4 +251,3 @@
 </script>
 </body>
 </html>
-
