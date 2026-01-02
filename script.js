@@ -1,5 +1,5 @@
 // ✅ URL DA API (COLE A URL NOVA AQUI TAMBÉM)
-const API_URL = "COLE_SUA_NOVA_URL_AQUI";
+const API_URL = "https://script.google.com/macros/s/AKfycbzS28qCIqnU8mM6nTbkdFQNeXHx2QeSUPB2JCp9nYxZywxTiZvJw9RxezNnHdOU_0yJeQ/exec";
 
 // 💰 CONFIGURAÇÃO DE TAXAS
 const TAXAS = { 1: 1.00, 2: 1.045, 3: 1.060, 4: 1.075, 5: 1.090, 6: 1.105 };
@@ -258,3 +258,4 @@ function sendFeedback() {
     const msg = "Olá! Tenho uma sugestão/feedback sobre o site do Retiro: ";
     window.open(`https://wa.me/5521994760764?text=${encodeURIComponent(msg)}`, '_blank');
 }
+
