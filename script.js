@@ -1,4 +1,4 @@
-// ✅ URL DA API (COLE A URL NOVA AQUI TAMBÉM)
+// ✅ COLE SUA NOVA URL AQUI TAMBÉM:
 const API_URL = "https://script.google.com/macros/s/AKfycbzS28qCIqnU8mM6nTbkdFQNeXHx2QeSUPB2JCp9nYxZywxTiZvJw9RxezNnHdOU_0yJeQ/exec";
 
 // 💰 CONFIGURAÇÃO DE TAXAS
@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function() {
     ids.tel.forEach(id => { const el = document.getElementById(id); if(el) el.addEventListener('input', applyTelMask); });
     ids.nome.forEach(id => { const el = document.getElementById(id); if(el) el.addEventListener('input', blockNum); });
     
-    // Tema Salvo
+    // Tema
     const savedTheme = localStorage.getItem('theme');
     const btn = document.getElementById('btnTheme');
     if (savedTheme === 'dark') {
@@ -258,4 +258,3 @@ function sendFeedback() {
     const msg = "Olá! Tenho uma sugestão/feedback sobre o site do Retiro: ";
     window.open(`https://wa.me/5521994760764?text=${encodeURIComponent(msg)}`, '_blank');
 }
-
