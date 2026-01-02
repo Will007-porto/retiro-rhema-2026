@@ -127,7 +127,7 @@
     </div>
 
 <script>
-    // ⚠️ SUBSTITUA PELA NOVA URL DO DEPLOY QUE VOCÊ ACABOU DE FAZER:
+    // ✅ URL DEFINITIVA FIXADA:
     const API_URL = "https://script.google.com/macros/s/AKfycbzS28qCIqnU8mM6nTbkdFQNeXHx2QeSUPB2JCp9nYxZywxTiZvJw9RxezNnHdOU_0yJeQ/exec"; 
     
     let dadosGlobais = [];
@@ -152,7 +152,7 @@
                     updateStats(dadosGlobais);
                 } else { alert("Erro ao carregar dados: " + res.message); }
             })
-            .catch(() => alert("Erro de conexão. Verifique se o link da API está atualizado."));
+            .catch(() => alert("Erro de conexão. Verifique a internet."));
     }
 
     function renderTable(data) {
@@ -249,7 +249,8 @@
             if(res.success) {
                 alert("✅ Inscrição excluída e e-mail enviado!");
                 closeModal();
-                carregarDados(); // Atualiza a tela imediatamente
+                // Chama carregarDados para atualizar a tabela visualmente na hora
+                carregarDados(); 
             } else { 
                 alert("❌ Erro: " + res.message); 
                 btn.innerText = "🗑️ Excluir Inscrição";
@@ -258,6 +259,7 @@
         })
         .catch(err => {
             alert("Erro de conexão.");
+            console.log(err);
             btn.innerText = "🗑️ Excluir Inscrição";
             btn.disabled = false;
         });
