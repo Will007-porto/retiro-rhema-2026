@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Gestão | Retiro 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #2563eb; --bg: #f1f5f9; --text: #1e293b; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); padding: 20px; }
+        
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .card-grid { display: flex; gap: 20px; margin-bottom: 20px; }
+        .card { background: white; padding: 20px; border-radius: 8px; flex: 1; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .card h3 { margin: 0; font-size: 0.9rem; color: #64748b; }
+        .card p { font-size: 2rem; font-weight: 700; margin: 5px 0 0 0; color: var(--primary); }
+
+        /* Tabela */
+        .table-container { background: white; border-radius: 8px; overflow-x: auto; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        th, td { padding: 12px 20px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 0.9rem; }
+        th { background: #f8fafc; font-weight: 600; }
+        tr:hover { background: #f1f5f9; cursor: pointer; }
+        
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+        .badge-pendente { background: #fff7ed; color: #c2410c; }
+        .badge-pago { background: #f0fdf4; color: #15803d; }
+
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 30px; border-radius: 12px; width: 500px; max-width: 90%; max-height: 90vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .detail-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.95rem; }
+        .detail-label { color: #64748b; font-weight: 600; }
+        
+        .action-bar { margin-top: 20px; display: flex; gap: 10px; border-top: 1px solid #eee; padding-top: 20px; }
+        input, select { padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; width: 100%; }
+        button { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
+        .btn-save { background: var(--primary); color: white; }
+        .btn-close { background: #e2e8f0; color: #333; }
+
+        #loginScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 999; display: flex; justify-content: center; align-items: center; flex-direction: column; }
+    </style>
+</head>
+<body>
+
+    <div id="loginScreen">
+        <h2>🔒 Área Restrita</h2>
+        <input type="password" id="adminPass" placeholder="Senha do Admin" style="width: 200px; margin-bottom: 10px;">
+        <button onclick="checkLogin()" class="btn-save">Entrar</button>
+    </div>
+
+    <div class="container" id="dashboard" style="display: none;">
+        <div class="header">
+            <h1>Gestão Retiro 2026</h1>
+            <button onclick="carregarDados()" class="btn-close">🔄 Atualizar</button>
+        </div>
+
+        <div class="card-grid">
+            <div class="card">
+                <h3>Total Inscritos</h3>
+                <p id="totalInscritos">0</p>
+            </div>
+            <div class="card">
+                <h3>Total Pago (R$)</h3>
+                <p id="totalReais">R$ 0,00</p>
+            </div>
+            <div class="card">
+                <h3>Pendentes</h3>
+                <p id="totalPendentes">0</p>
+            </div>
+        </div>
+
+        <input type="text" id="searchBox" placeholder="🔍 Buscar por nome..." onkeyup="filterTable()" style="margin-bottom: 15px; padding: 12px;">
+
+        <div class="table-container">
+            <table id="tabelaInscritos">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Igreja</th>
+                        <th>Tipo</th>
+                        <th>Pagamento</th>
+                        <th>Status</th>
+                        <th>Valor Pago</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal" id="modalDetalhes">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalNome">Nome do Inscrito</h2>
+                <span style="cursor:pointer; font-size:1.5rem;" onclick="closeModal()">&times;</span>
+            </div>
+            
+            <div id="modalBody">
+                </div>
+
+            <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                <h4 style="margin-top:0">Gestão Financeira</h4>
+                <div class="detail-row">
+                    <label>Status:</label>
+                    <select id="editStatus">
+                        <option value="Pendente">Pendente</option>
+                        <option value="Pago">Pago (Total)</option>
+                        <option value="Parcial">Pago (Parcial)</option>
+                        <option value="Cancelado">Cancelado</option>
+                    </select>
+                </div>
+                <div class="detail-row">
+                    <label>Valor Pago (R$):</label>
+                    <input type="number" id="editValor">
+                </div>
+                <button onclick="salvarAlteracao()" class="btn-save" style="width: 100%; margin-top: 10px;">💾 Salvar Alterações</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // ⚠️ SUBSTITUA PELA SUA URL NOVA AQUI
+    const API_URL = "https://script.google.com/macros/s/AKfycbxYc9ip8mbe6BNxqQCcZ_xXgfCmIwm-Z9iBF7UwzHc6csTXdYrdNAmJvpXdDmJY9tZtXg/exec"; 
+    
+    let dadosGlobais = [];
+    let usuarioAtual = null;
+
+    function checkLogin() {
+        const pass = document.getElementById('adminPass').value;
+        if(pass === "1234") { // Senha simples frontend
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            carregarDados();
+        } else {
+            alert("Senha incorreta");
+        }
+    }
+
+    function carregarDados() {
+        // Usa o endpoint "?action=listar" para buscar dados (doGet)
+        fetch(API_URL + "?action=listar")
+            .then(r => r.json())
+            .then(res => {
+                if(res.success) {
+                    dadosGlobais = res.data;
+                    renderTable(dadosGlobais);
+                    updateStats(dadosGlobais);
+                }
+            });
+    }
+
+    function renderTable(data) {
+        const tbody = document.querySelector('#tabelaInscritos tbody');
+        tbody.innerHTML = "";
+        
+        data.forEach(p => {
+            const tr = document.createElement('tr');
+            tr.onclick = () => openModal(p);
+            
+            const badgeClass = p.statusFinanceiro === 'Pago' ? 'badge-pago' : 'badge-pendente';
+            
+            tr.innerHTML = `
+                <td><strong>${p.nome}</strong><br><small>${p.telefone}</small></td>
+                <td>${p.igreja}</td>
+                <td>${p.tipo}</td>
+                <td>${p.formaPagamento}</td>
+                <td><span class="badge ${badgeClass}">${p.statusFinanceiro}</span></td>
+                <td>R$ ${p.valorPago}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function updateStats(data) {
+        document.getElementById('totalInscritos').innerText = data.length;
+        
+        const totalReais = data.reduce((acc, curr) => acc + (parseFloat(curr.valorPago) || 0), 0);
+        document.getElementById('totalReais').innerText = "R$ " + totalReais.toFixed(2);
+        
+        const pendentes = data.filter(d => d.statusFinanceiro === 'Pendente').length;
+        document.getElementById('totalPendentes').innerText = pendentes;
+    }
+
+    function openModal(pessoa) {
+        usuarioAtual = pessoa;
+        document.getElementById('modalNome').innerText = pessoa.nome;
+        document.getElementById('editStatus').value = pessoa.statusFinanceiro;
+        document.getElementById('editValor').value = pessoa.valorPago;
+
+        const html = `
+            <div class="detail-row"><span class="detail-label">CPF:</span> <span>${pessoa.cpf}</span></div>
+            <div class="detail-row"><span class="detail-label">Idade:</span> <span>${pessoa.idade} anos</span></div>
+            <div class="detail-row"><span class="detail-label">Menor:</span> <span>${pessoa.isMenor}</span></div>
+            ${pessoa.isMenor === "SIM" ? `<div class="detail-row"><span class="detail-label">Responsável:</span> <span>${pessoa.respNome} (${pessoa.respTel})</span></div>` : ''}
+            <hr>
+            <div class="detail-row"><span class="detail-label">Permanência:</span> <span>${pessoa.permanencia}</span></div>
+            <div class="detail-row"><span class="detail-label">Dias:</span> <span>${pessoa.dias}</span></div>
+            <div class="detail-row"><span class="detail-label">Saúde:</span> <span>${pessoa.saude}</span></div>
+            <div class="detail-row"><span class="detail-label">Emergência:</span> <span>${pessoa.emergencia}</span></div>
+        `;
+        document.getElementById('modalBody').innerHTML = html;
+        document.getElementById('modalDetalhes').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('modalDetalhes').style.display = 'none';
+    }
+
+    function salvarAlteracao() {
+        const novoStatus = document.getElementById('editStatus').value;
+        const novoValor = document.getElementById('editValor').value;
+        
+        const payload = {
+            action: "atualizar_pagamento",
+            senha: "1234", // Senha enviada para validação backend
+            linha: usuarioAtual.linha,
+            status: novoStatus,
+            valor: novoValor
+        };
+
+        fetch(API_URL, {
+            method: "POST",
+            body: JSON.stringify(payload)
+        })
+        .then(r => r.json())
+        .then(res => {
+            if(res.success) {
+                alert("Salvo com sucesso!");
+                closeModal();
+                carregarDados(); // Recarrega a tabela
+            } else {
+                alert("Erro: " + res.message);
+            }
+        });
+    }
+
+    function filterTable() {
+        const term = document.getElementById('searchBox').value.toLowerCase();
+        const filtered = dadosGlobais.filter(p => p.nome.toLowerCase().includes(term));
+        renderTable(filtered);
+    }
+</script>
+
+</body>
+</html>
