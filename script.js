@@ -1,5 +1,5 @@
 // ✅ URL DA API (MANTENHA A SUA URL ATUALIZADA AQUI)
-const API_URL = "https://script.google.com/macros/s/AKfycbxYc9ip8mbe6BNxqQCcZ_xXgfCmIwm-Z9iBF7UwzHc6csTXdYrdNAmJvpXdDmJY9tZtXg/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzS28qCIqnU8mM6nTbkdFQNeXHx2QeSUPB2JCp9nYxZywxTiZvJw9RxezNnHdOU_0yJeQ/exec";
 
 // 💰 CONFIGURAÇÃO DE TAXAS (EXEMPLO GENÉRICO DE MERCADO)
 // Altere o número (ex: 1.045 = 4.5% de juros totais)
@@ -304,3 +304,4 @@ document.addEventListener("DOMContentLoaded", function() {
     
     // ... (o resto do seu código de máscaras continua aqui) ...
 });
+
