@@ -11,6 +11,16 @@
 
 <div class="container">
     <header>
+        <div class="settings-wrapper">
+            <button id="btnSettings" class="btn-gear" onclick="toggleMenu()">⚙️</button>
+            <div id="settingsMenu" class="dropdown-menu hidden">
+                <button onclick="toggleTheme()" id="btnTheme">🌙 Modo Escuro</button>
+                <button onclick="sendFeedback()">💬 Enviar Feedback</button>
+                <div class="separator"></div>
+                <a href="admin.html" class="admin-link">🔐 Acesso Admin</a>
+            </div>
+        </div>
+
         <h1>Retiro de Carnaval 2026</h1>
         <p>Igreja Batista Central Rhema</p>
         <div class="progress-bar">
@@ -277,3 +287,4 @@
 <script src="script.js"></script>
 </body>
 </html>
+
