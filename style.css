@@ -191,3 +191,16 @@ body.dark-mode .day-bubble span,
 body.dark-mode .inst-total {
     color: #94a3b8;
 }
+
+/* --- CORREÇÃO: TÍTULOS NO MODO ESCURO --- */
+body.dark-mode label {
+    color: #f1f5f9; /* Cor quase branca para leitura */
+}
+
+body.dark-mode h2 {
+    color: #e2e8f0; /* Subtítulos em cinza claro */
+}
+
+body.dark-mode .price-value {
+    color: #ffffff; /* Garante que o preço continue branco */
+}
