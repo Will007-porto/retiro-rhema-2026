@@ -58,7 +58,7 @@ input.input-error { border-color: var(--error); background-color: #fef2f2; }
 .price-value { display: block; font-size: 2.2rem; font-weight: 700; }
 .price-sub { display: block; font-size: 0.8rem; margin-top: 5px; opacity: 0.8; }
 
-/* Lista de Parcelamento (NOVO) */
+/* Lista de Parcelamento */
 .installment-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
 .installment-option { padding: 12px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; background: #fff; }
 .installment-option:hover { border-color: var(--primary); background: #f0f9ff; }
@@ -95,112 +95,21 @@ button:hover { opacity: 0.9; }
 @media (max-width: 480px) { .row { flex-direction: column; gap: 0; } .container { padding: 20px; border-radius: 0; min-height: 100vh; } }
 
 /* --- BOTÃO DE CONFIGURAÇÕES E MENU --- */
-.settings-wrapper {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    z-index: 100;
-}
-
-.btn-gear {
-    background: transparent;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    padding: 5px;
-    border-radius: 50%;
-    transition: transform 0.3s;
-    color: var(--text);
-    width: auto; /* Sobrescreve estilo padrão */
-}
-
-.btn-gear:hover {
-    background: rgba(0,0,0,0.05);
-    transform: rotate(90deg);
-}
-
-.dropdown-menu {
-    position: absolute;
-    right: 0;
-    top: 40px;
-    background: var(--white);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    width: 180px;
-    padding: 8px 0;
-    display: flex;
-    flex-direction: column;
-}
-
-.dropdown-menu button, .dropdown-menu a {
-    background: none;
-    border: none;
-    text-align: left;
-    padding: 10px 15px;
-    width: 100%;
-    font-size: 0.9rem;
-    color: var(--text);
-    cursor: pointer;
-    text-decoration: none;
-    display: block;
-    font-weight: 500;
-}
-
-.dropdown-menu button:hover, .dropdown-menu a:hover {
-    background-color: var(--bg);
-    color: var(--primary);
-}
-
-.separator {
-    height: 1px;
-    background: var(--border);
-    margin: 5px 0;
-}
+.settings-wrapper { position: absolute; top: 20px; right: 20px; z-index: 100; }
+.btn-gear { background: transparent; border: none; font-size: 1.5rem; cursor: pointer; padding: 5px; border-radius: 50%; transition: transform 0.3s; color: var(--text); width: auto; }
+.btn-gear:hover { background: rgba(0,0,0,0.05); transform: rotate(90deg); }
+.dropdown-menu { position: absolute; right: 0; top: 40px; background: var(--white); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); width: 180px; padding: 8px 0; display: flex; flex-direction: column; }
+.dropdown-menu button, .dropdown-menu a { background: none; border: none; text-align: left; padding: 10px 15px; width: 100%; font-size: 0.9rem; color: var(--text); cursor: pointer; text-decoration: none; display: block; font-weight: 500; }
+.dropdown-menu button:hover, .dropdown-menu a:hover { background-color: var(--bg); color: var(--primary); }
+.separator { height: 1px; background: var(--border); margin: 5px 0; }
 
 /* --- TEMA ESCURO (DARK MODE) --- */
-body.dark-mode {
-    --bg: #0f172a;         /* Fundo da página bem escuro */
-    --white: #1e293b;      /* Fundo dos cartões (cinza azulado) */
-    --text: #f1f5f9;       /* Texto quase branco */
-    --border: #334155;     /* Bordas mais suaves */
-    --primary: #3b82f6;    /* Azul um pouco mais claro para contraste */
-}
-
-/* Ajustes específicos para inputs no modo escuro */
-body.dark-mode input, 
-body.dark-mode select,
-body.dark-mode .day-bubble,
-body.dark-mode .installment-option {
-    background-color: #334155;
-    color: #f1f5f9;
-    border-color: #475569;
-}
-
-body.dark-mode .readonly-field {
-    background-color: #1e293b;
-}
-
-body.dark-mode .day-bubble:hover,
-body.dark-mode .installment-option:hover {
-    border-color: var(--primary);
-}
-
-body.dark-mode .header p,
-body.dark-mode .day-bubble span,
-body.dark-mode .inst-total {
-    color: #94a3b8;
-}
-
-/* --- CORREÇÃO: TÍTULOS NO MODO ESCURO --- */
-body.dark-mode label {
-    color: #f1f5f9; /* Cor quase branca para leitura */
-}
-
-body.dark-mode h2 {
-    color: #e2e8f0; /* Subtítulos em cinza claro */
-}
-
-body.dark-mode .price-value {
-    color: #ffffff; /* Garante que o preço continue branco */
-}
+body.dark-mode { --bg: #0f172a; --white: #1e293b; --text: #f1f5f9; --border: #334155; --primary: #3b82f6; }
+body.dark-mode input, body.dark-mode select, body.dark-mode .day-bubble, body.dark-mode .installment-option { background-color: #334155; color: #f1f5f9; border-color: #475569; }
+body.dark-mode .readonly-field { background-color: #1e293b; }
+body.dark-mode .day-bubble:hover, body.dark-mode .installment-option:hover { border-color: var(--primary); }
+body.dark-mode .header p, body.dark-mode .day-bubble span, body.dark-mode .inst-total { color: #94a3b8; }
+/* Correções de visibilidade */
+body.dark-mode label { color: #f1f5f9; }
+body.dark-mode h2 { color: #e2e8f0; }
+body.dark-mode .price-value { color: #ffffff; }
