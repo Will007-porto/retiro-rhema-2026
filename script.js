@@ -1,4 +1,4 @@
-// ✅ URL DEFINITIVA FIXADA:
+// ✅ URL DEFINITIVA FIXADA (Mantenha a sua URL atual aqui)
 const API_URL = "https://script.google.com/macros/s/AKfycbzS28qCIqnU8mM6nTbkdFQNeXHx2QeSUPB2JCp9nYxZywxTiZvJw9RxezNnHdOU_0yJeQ/exec";
 
 // 💰 CONFIGURAÇÃO DE TAXAS
@@ -29,6 +29,51 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 
+// --- VALIDADORES MATEMÁTICOS (CPF E TELEFONE) ---
+function validaCPF(cpf) {
+    cpf = cpf.replace(/[^\d]+/g, '');
+    if (cpf == '') return false;
+    // Elimina CPFs invalidos conhecidos
+    if (cpf.length != 11 || 
+        cpf == "00000000000" || 
+        cpf == "11111111111" || 
+        cpf == "22222222222" || 
+        cpf == "33333333333" || 
+        cpf == "44444444444" || 
+        cpf == "55555555555" || 
+        cpf == "66666666666" || 
+        cpf == "77777777777" || 
+        cpf == "88888888888" || 
+        cpf == "99999999999")
+            return false;
+    // Valida 1o digito
+    let add = 0;
+    for (let i = 0; i < 9; i++) add += parseInt(cpf.charAt(i)) * (10 - i);
+    let rev = 11 - (add % 11);
+    if (rev == 10 || rev == 11) rev = 0;
+    if (rev != parseInt(cpf.charAt(9))) return false;
+    // Valida 2o digito
+    add = 0;
+    for (let i = 0; i < 10; i++) add += parseInt(cpf.charAt(i)) * (11 - i);
+    rev = 11 - (add % 11);
+    if (rev == 10 || rev == 11) rev = 0;
+    if (rev != parseInt(cpf.charAt(10))) return false;
+    return true;
+}
+
+function validaTelefone(tel) {
+    tel = tel.replace(/\D/g, '');
+    // Verifica se tem 11 digitos (DDD + 9 + numero)
+    if (tel.length !== 11) return false;
+    // Verifica se o DDD é válido (maior que 10)
+    if (parseInt(tel.substring(0, 2)) <= 10) return false;
+    // Verifica se o celular começa com 9
+    if (parseInt(tel.substring(2, 3)) !== 9) return false;
+    // Verifica numeros repetidos (ex: 21 99999-9999 pode existir, mas 00000 nao)
+    if (tel === "00000000000") return false;
+    return true;
+}
+
 // --- NAVEGAÇÃO ---
 function nextStep(step) {
     if (!validateStep(step)) return;
@@ -40,6 +85,14 @@ function nextStep(step) {
     
     if (step === 2) {
         const allow = document.getElementById('respAutorizaPernoite').value;
+        const termo = document.getElementById('termoResponsavel');
+        
+        // Validação do Termo
+        if (!termo.checked) {
+            alert("O responsável precisa aceitar o termo de autorização.");
+            return;
+        }
+
         const sel = document.getElementById('permanencia');
         for(let opt of sel.options) opt.disabled = false;
         if (allow === "Não") {
@@ -168,7 +221,7 @@ function selecionarParcela(elemento, qtd, valorParc, total) {
     document.getElementById('detalhesParcelamento').value = texto;
 }
 
-// --- VALIDAÇÃO ---
+// --- VALIDAÇÃO DE CAMPOS ---
 function validateStep(step) {
     const el = document.getElementById(`step${step}`);
     const inps = el.querySelectorAll('input[required], select[required]');
@@ -176,15 +229,50 @@ function validateStep(step) {
     el.querySelectorAll('.error-msg').forEach(m=>m.classList.add('hidden'));
     el.querySelectorAll('.input-error').forEach(i=>i.classList.remove('input-error'));
 
+    // Valida campos vazios e tamanho mínimo
     inps.forEach(i => {
         if(i.offsetParent === null) return;
         if(!i.value.trim()) { i.classList.add('input-error'); ok=false; return; }
-        
-        if(i.name==='nome' || i.name==='respNome') if(i.value.length<6) { showError(i); ok=false; }
-        if(i.name==='cpf' || i.name==='respCpf') if(i.value.replace(/\D/g,'').length!==11) { showError(i); ok=false; }
-        if(i.name.includes('Telefone')) if(i.value.replace(/\D/g,'').length<10) { showError(i); ok=false; }
+        if(i.name==='nome' || i.name==='respNome') if(i.value.length<6) { showError(i, "Nome muito curto"); ok=false; }
     });
 
+    // --- VALIDAÇÕES ESPECÍFICAS (CPF e TELEFONE) ---
+    
+    // Etapa 1: CPF e Telefone do Participante
+    if (step === 1) {
+        const cpf = document.getElementById('cpfParticipante');
+        const tel = document.getElementById('telefone');
+
+        if (!validaCPF(cpf.value)) { 
+            showError(cpf, "CPF inválido."); ok = false; 
+        }
+        if (!validaTelefone(tel.value)) { 
+            showError(tel, "WhatsApp inválido (use DDD + 9 + número)."); ok = false; 
+        }
+    }
+
+    // Etapa 2: CPF e Telefone do Responsável (se menor)
+    if (step === 2 && isMinor) {
+        const cpfResp = document.getElementById('respCpf');
+        const telResp = document.getElementById('respTelefone');
+
+        if (!validaCPF(cpfResp.value)) { 
+            showError(cpfResp, "CPF inválido."); ok = false; 
+        }
+        if (!validaTelefone(telResp.value)) { 
+            showError(telResp, "Telefone inválido."); ok = false; 
+        }
+    }
+
+    // Etapa 3: Telefone de Emergência
+    if (step === 3) {
+        const telEmerg = document.getElementById('emergenciaTelefone');
+        if (!validaTelefone(telEmerg.value)) { 
+            showError(telEmerg, "Telefone inválido."); ok = false; 
+        }
+    }
+
+    // Etapa 4: Cartão
     if (step === 4) {
         const pgto = document.getElementById('formaPagamento').value;
         if (pgto === 'Cartao' && document.getElementById('detalhesParcelamento').value === "") {
@@ -193,10 +281,18 @@ function validateStep(step) {
         }
     }
 
-    if(!ok) alert("Verifique os campos em vermelho.");
+    if(!ok) alert("Corrija os campos destacados em vermelho.");
     return ok;
 }
-function showError(i) { i.classList.add('input-error'); const m=i.parentElement.querySelector('.error-msg'); if(m) m.classList.remove('hidden'); }
+
+function showError(i, msgPersonalizada = null) { 
+    i.classList.add('input-error'); 
+    const m = i.parentElement.querySelector('.error-msg'); 
+    if(m) {
+        if(msgPersonalizada) m.innerText = msgPersonalizada;
+        m.classList.remove('hidden'); 
+    }
+}
 
 // --- SUBMIT ---
 document.getElementById('rsvpForm').addEventListener('submit', function(e) {
