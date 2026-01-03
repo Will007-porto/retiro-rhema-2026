@@ -113,3 +113,36 @@ body.dark-mode .header p, body.dark-mode .day-bubble span, body.dark-mode .inst-
 body.dark-mode label { color: #f1f5f9; }
 body.dark-mode h2 { color: #e2e8f0; }
 body.dark-mode .price-value { color: #ffffff; }
+
+/* --- ESTILO DA MENSAGEM DE BOAS VINDAS --- */
+.welcome-box {
+    background: #e0f2fe; /* Azul clarinho */
+    color: #0c4a6e;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 20px 0;
+    border-left: 4px solid var(--primary);
+    text-align: left;
+}
+
+body.dark-mode .welcome-box {
+    background: #1e3a8a; /* Azul escuro no modo noturno */
+    color: #e0f2fe;
+    border-left-color: #60a5fa;
+}
+
+/* Ajuste no termo do responsável */
+.term-box {
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 15px;
+}
+
+body.dark-mode .term-box {
+    background: #431407;
+    border-color: #9a3412;
+}
